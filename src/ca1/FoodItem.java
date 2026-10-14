@@ -6,11 +6,12 @@ import java.time.LocalDateTime;
 /**
  * Base type for every tray that can sit in the storage unit.
  * Holds the data the brief asks every item to carry (weight, best-before
- * date, time placed) and the validation rules that apply to all of them.
+ * date, time placed) and the one validation rule that applies to all of
+ * them: a best-before date at most 14 days from today.
  */
 public abstract class FoodItem {
 
-    private static final int BRIEF_MAX_SHELF_LIFE_DAYS = 14;
+    private static final int MAX_SHELF_LIFE_DAYS = 14;
 
     private final String name;
     private final double weightGrams;
@@ -26,18 +27,13 @@ public abstract class FoodItem {
         }
 
         LocalDate today = LocalDate.now();
-        // getMaxShelfLifeDays() is abstract but safe to call here: every subclass
-        // just returns a fixed constant, so it never depends on fields that
-        // haven't been assigned yet.
-        int maxAllowedDays = Math.min(BRIEF_MAX_SHELF_LIFE_DAYS, getMaxShelfLifeDays());
-
         if (bestBeforeDate.isBefore(today)) {
             throw new IllegalArgumentException("Best-before date cannot be in the past.");
         }
-        if (bestBeforeDate.isAfter(today.plusDays(maxAllowedDays))) {
+        if (bestBeforeDate.isAfter(today.plusDays(MAX_SHELF_LIFE_DAYS))) {
             throw new IllegalArgumentException(
                     name + " cannot have a best-before date more than "
-                    + maxAllowedDays + " day(s) from today.");
+                    + MAX_SHELF_LIFE_DAYS + " day(s) from today.");
         }
 
         this.name = name;
@@ -45,9 +41,6 @@ public abstract class FoodItem {
         this.bestBeforeDate = bestBeforeDate;
         this.timePlaced = LocalDateTime.now();
     }
-
-    /** Each food type defines its own realistic shelf life (still capped at 14 days). */
-    public abstract int getMaxShelfLifeDays();
 
     public String getName() {
         return name;

@@ -7,9 +7,4 @@ public class Burger extends FoodItem {
     public Burger(double weightGrams, LocalDate bestBeforeDate) {
         super("Burger", weightGrams, bestBeforeDate);
     }
-
-    @Override
-    public int getMaxShelfLifeDays() {
-        return 5;
-    }
 }
