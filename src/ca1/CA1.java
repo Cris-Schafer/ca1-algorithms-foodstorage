@@ -1,5 +1,7 @@
 package ca1;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class CA1 {
@@ -12,10 +14,10 @@ public class CA1 {
 
         do {
             printMenu();
-            choice = readMenuChoice();
+            choice = readIntChoice();
 
             switch (choice) {
-                case 1 -> System.out.println("Add food item - coming soon.");
+                case 1 -> handleAddItem();
                 case 2 -> System.out.println("Remove food item - coming soon.");
                 case 3 -> System.out.println("Show item at the front - coming soon.");
                 case 4 -> System.out.println("Display all items - coming soon.");
@@ -40,12 +42,70 @@ public class CA1 {
         System.out.print("Choose an option: ");
     }
 
-    private static int readMenuChoice() {
+    private static int readIntChoice() {
         String input = scanner.nextLine().trim();
         try {
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
             return -1;
+        }
+    }
+
+    private static void handleAddItem() {
+        if (storage.isFull()) {
+            System.out.println("Storage is full (capacity 8). Remove an item before adding another.");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("1. Burger  2. Pizza  3. Fries  4. Sandwich  5. Hotdog");
+        System.out.print("Choose the food type: ");
+        int typeChoice = readIntChoice();
+
+        double weight = readWeight();
+        LocalDate bestBeforeDate = readBestBeforeDate();
+
+        try {
+            FoodItem item = switch (typeChoice) {
+                case 1 -> new Burger(weight, bestBeforeDate);
+                case 2 -> new Pizza(weight, bestBeforeDate);
+                case 3 -> new Fries(weight, bestBeforeDate);
+                case 4 -> new Sandwich(weight, bestBeforeDate);
+                case 5 -> new Hotdog(weight, bestBeforeDate);
+                default -> null;
+            };
+
+            if (item == null) {
+                System.out.println("Please choose a food type between 1 and 5.");
+                return;
+            }
+
+            storage.addFront(item);
+            System.out.println(item.getName() + " added to the front of the storage.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println("Could not add item: " + e.getMessage());
+        }
+    }
+
+    private static double readWeight() {
+        System.out.print("Weight in grams: ");
+        String input = scanner.nextLine().trim();
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            // Falls through to FoodItem's own "weight must be > 0" check.
+            return -1;
+        }
+    }
+
+    private static LocalDate readBestBeforeDate() {
+        System.out.print("Best-before date (yyyy-mm-dd): ");
+        String input = scanner.nextLine().trim();
+        try {
+            return LocalDate.parse(input);
+        } catch (DateTimeParseException e) {
+            // Falls through to FoodItem's own "best-before date is required" check.
+            return null;
         }
     }
 }
