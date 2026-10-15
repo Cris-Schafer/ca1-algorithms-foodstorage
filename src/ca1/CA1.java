@@ -16,7 +16,7 @@ public class CA1 {
 
             switch (choice) {
                 case 1 -> handleAddItem();
-                case 2 -> System.out.println("Remove food item - coming soon.");
+                case 2 -> handleRemoveItem();
                 case 3 -> System.out.println("Show item at the front - coming soon.");
                 case 4 -> System.out.println("Display all items - coming soon.");
                 case 5 -> System.out.println("Search food item - coming soon.");
@@ -80,5 +80,30 @@ public class CA1 {
         } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Could not add item: " + e.getMessage());
         }
+    }
+
+    private static void handleRemoveItem() {
+        if (storage.isEmpty()) {
+            System.out.println("Storage is empty. Nothing to remove.");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("1. Remove from the front (stack mode)");
+        System.out.println("2. Remove from the rear (queue mode)");
+        System.out.print("Choose the removal mode: ");
+        int modeChoice = input.readInt();
+
+        FoodItem removed;
+        switch (modeChoice) {
+            case 1 -> removed = storage.removeFront();
+            case 2 -> removed = storage.removeRear();
+            default -> {
+                System.out.println("Please choose 1 or 2.");
+                return;
+            }
+        }
+
+        System.out.println("Removed: " + removed);
     }
 }
