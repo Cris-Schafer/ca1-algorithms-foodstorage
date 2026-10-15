@@ -62,16 +62,19 @@ public class CA1 {
         System.out.print("Choose the food type: ");
         int typeChoice = readIntChoice();
 
+        System.out.print("Food name (e.g. Cheese Burger): ");
+        String name = scanner.nextLine().trim();
+
         double weight = readWeight();
         LocalDate bestBeforeDate = readBestBeforeDate();
 
         try {
             FoodItem item = switch (typeChoice) {
-                case 1 -> new Burger(weight, bestBeforeDate);
-                case 2 -> new Pizza(weight, bestBeforeDate);
-                case 3 -> new Fries(weight, bestBeforeDate);
-                case 4 -> new Sandwich(weight, bestBeforeDate);
-                case 5 -> new Hotdog(weight, bestBeforeDate);
+                case 1 -> new Burger(name, weight, bestBeforeDate);
+                case 2 -> new Pizza(name, weight, bestBeforeDate);
+                case 3 -> new Fries(name, weight, bestBeforeDate);
+                case 4 -> new Sandwich(name, weight, bestBeforeDate);
+                case 5 -> new Hotdog(name, weight, bestBeforeDate);
                 default -> null;
             };
 
@@ -81,7 +84,7 @@ public class CA1 {
             }
 
             storage.addFront(item);
-            System.out.println(item.getName() + " added to the front of the storage.");
+            System.out.println(item.getType() + ": " + item.getName() + " added to the front of the storage.");
         } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Could not add item: " + e.getMessage());
         }

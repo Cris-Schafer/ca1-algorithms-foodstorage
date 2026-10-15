@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Fries extends FoodItem {
 
-    public Fries(double weightGrams, LocalDate bestBeforeDate) {
-        super("Fries", weightGrams, bestBeforeDate);
+    public Fries(String name, double weightGrams, LocalDate bestBeforeDate) {
+        super("Fries", name, weightGrams, bestBeforeDate);
     }
 }

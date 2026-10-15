@@ -5,20 +5,28 @@ import java.time.LocalDateTime;
 
 /**
  * Base type for every tray that can sit in the storage unit.
- * Holds the data the brief asks every item to carry (weight, best-before
- * date, time placed) and the one validation rule that applies to all of
- * them: a best-before date at most 14 days from today.
+ * Holds the data the brief asks every item to carry (name, weight,
+ * best-before date, time placed) and the one validation rule that
+ * applies to all of them: a best-before date at most 14 days from today.
+ *
+ * "type" and "name" are different things: type is fixed by which
+ * subclass is used (e.g. every Burger has type "Burger"), while name is
+ * whatever the chef types for that specific tray (e.g. "Cheese Burger").
  */
 public abstract class FoodItem {
 
     private static final int MAX_SHELF_LIFE_DAYS = 14;
 
+    private final String type;
     private final String name;
     private final double weightGrams;
     private final LocalDate bestBeforeDate;
     private final LocalDateTime timePlaced;
 
-    protected FoodItem(String name, double weightGrams, LocalDate bestBeforeDate) {
+    protected FoodItem(String type, String name, double weightGrams, LocalDate bestBeforeDate) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Food name cannot be empty.");
+        }
         if (weightGrams <= 0) {
             throw new IllegalArgumentException("Weight must be greater than 0 grams.");
         }
@@ -36,10 +44,15 @@ public abstract class FoodItem {
                     + MAX_SHELF_LIFE_DAYS + " day(s) from today.");
         }
 
+        this.type = type;
         this.name = name;
         this.weightGrams = weightGrams;
         this.bestBeforeDate = bestBeforeDate;
         this.timePlaced = LocalDateTime.now();
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getName() {
@@ -60,7 +73,7 @@ public abstract class FoodItem {
 
     @Override
     public String toString() {
-        return String.format("%-10s | %7.1f g | best-before %s | placed %s",
-                name, weightGrams, bestBeforeDate, timePlaced.toLocalTime().withNano(0));
+        return String.format("%-10s | %-15s | %7.1f g | best-before %s | placed %s",
+                type, name, weightGrams, bestBeforeDate, timePlaced.toLocalTime().withNano(0));
     }
 }
