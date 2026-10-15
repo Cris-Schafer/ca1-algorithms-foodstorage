@@ -1,12 +1,10 @@
 package ca1;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Scanner;
 
 public class CA1 {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private static final ConsoleInput input = new ConsoleInput();
     private static final FoodStorageDeque storage = new FoodStorageDeque();
 
     public static void main(String[] args) {
@@ -14,7 +12,7 @@ public class CA1 {
 
         do {
             printMenu();
-            choice = readIntChoice();
+            choice = input.readInt();
 
             switch (choice) {
                 case 1 -> handleAddItem();
@@ -27,7 +25,7 @@ public class CA1 {
             }
         } while (choice != 6);
 
-        scanner.close();
+        input.close();
     }
 
     private static void printMenu() {
@@ -42,15 +40,6 @@ public class CA1 {
         System.out.print("Choose an option: ");
     }
 
-    private static int readIntChoice() {
-        String input = scanner.nextLine().trim();
-        try {
-            return Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
     private static void handleAddItem() {
         if (storage.isFull()) {
             System.out.println("Storage is full (capacity 8). Remove an item before adding another.");
@@ -58,15 +47,18 @@ public class CA1 {
         }
 
         System.out.println();
-        System.out.println("1. Burger  2. Pizza  3. Fries  4. Sandwich  5. Hotdog");
+        System.out.println("1. Burger 🍔  2. Pizza 🍕  3. Fries 🍟  4. Sandwich 🥪  5. Hotdog 🌭");
         System.out.print("Choose the food type: ");
-        int typeChoice = readIntChoice();
+        int typeChoice = input.readInt();
 
         System.out.print("Food name (e.g. Cheese Burger): ");
-        String name = scanner.nextLine().trim();
+        String name = input.readText();
 
-        double weight = readWeight();
-        LocalDate bestBeforeDate = readBestBeforeDate();
+        System.out.print("Weight in grams: ");
+        double weight = input.readWeight();
+
+        System.out.print("Best-before date (yyyy-mm-dd): ");
+        LocalDate bestBeforeDate = input.readBestBeforeDate();
 
         try {
             FoodItem item = switch (typeChoice) {
@@ -87,28 +79,6 @@ public class CA1 {
             System.out.println(item.getType() + ": " + item.getName() + " added to the front of the storage.");
         } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Could not add item: " + e.getMessage());
-        }
-    }
-
-    private static double readWeight() {
-        System.out.print("Weight in grams: ");
-        String input = scanner.nextLine().trim();
-        try {
-            return Double.parseDouble(input);
-        } catch (NumberFormatException e) {
-            // Falls through to FoodItem's own "weight must be > 0" check.
-            return -1;
-        }
-    }
-
-    private static LocalDate readBestBeforeDate() {
-        System.out.print("Best-before date (yyyy-mm-dd): ");
-        String input = scanner.nextLine().trim();
-        try {
-            return LocalDate.parse(input);
-        } catch (DateTimeParseException e) {
-            // Falls through to FoodItem's own "best-before date is required" check.
-            return null;
         }
     }
 }
