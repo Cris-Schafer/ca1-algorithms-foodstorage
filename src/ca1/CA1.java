@@ -2,6 +2,9 @@ package ca1;
 
 import java.time.LocalDate;
 
+// Entry point: just the console menu. It decides what to ask and what to
+// do with the answer; ConsoleInput decides how to read it safely, and
+// FoodStorageDeque decides how the data is actually stored.
 public class CA1 {
 
     private static final ConsoleInput input = new ConsoleInput();
@@ -10,6 +13,7 @@ public class CA1 {
     public static void main(String[] args) {
         int choice;
 
+        // Keep showing the menu and acting on the choice until the chef picks 6 (exit).
         do {
             printMenu();
             choice = input.readInt();
@@ -41,6 +45,8 @@ public class CA1 {
     }
 
     private static void handleAddItem() {
+        // Check capacity before asking anything else, so the chef doesn't
+        // waste time typing details for an item that can't be stored.
         if (storage.isFull()) {
             System.out.println("Storage is full (capacity 8). Remove an item before adding another.");
             return;
@@ -61,6 +67,9 @@ public class CA1 {
         LocalDate bestBeforeDate = input.readBestBeforeDate();
 
         try {
+            // typeChoice decides which subclass gets created; name/weight/date
+            // get validated by FoodItem's constructor, not here, so the rule
+            // only lives in one place.
             FoodItem item = switch (typeChoice) {
                 case 1 -> new Burger(name, weight, bestBeforeDate);
                 case 2 -> new Pizza(name, weight, bestBeforeDate);
@@ -78,6 +87,9 @@ public class CA1 {
             storage.addFront(item);
             System.out.println(item.getType() + ": " + item.getName() + " added to the front of the storage.");
         } catch (IllegalArgumentException | IllegalStateException e) {
+            // Catches whatever FoodItem or FoodStorageDeque rejected (bad
+            // weight/date/name, or storage filling up mid-entry) and shows
+            // it instead of letting the program crash.
             System.out.println("Could not add item: " + e.getMessage());
         }
     }
@@ -94,6 +106,7 @@ public class CA1 {
         System.out.print("Choose the removal mode: ");
         int modeChoice = input.readInt();
 
+        // This is the core of the brief: same storage, two ways to remove.
         FoodItem removed;
         switch (modeChoice) {
             case 1 -> removed = storage.removeFront();

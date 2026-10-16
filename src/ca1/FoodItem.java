@@ -24,6 +24,8 @@ public abstract class FoodItem {
     private final LocalDateTime timePlaced;
 
     protected FoodItem(String type, String name, double weightGrams, LocalDate bestBeforeDate) {
+        // Every check below throws immediately on the first problem found,
+        // so an invalid item is never half-created.
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Food name cannot be empty.");
         }
@@ -34,6 +36,8 @@ public abstract class FoodItem {
             throw new IllegalArgumentException("Best-before date is required.");
         }
 
+        // The brief's one rule: best-before date can't be in the past, and
+        // can't be more than 14 days in the future.
         LocalDate today = LocalDate.now();
         if (bestBeforeDate.isBefore(today)) {
             throw new IllegalArgumentException("Best-before date cannot be in the past.");

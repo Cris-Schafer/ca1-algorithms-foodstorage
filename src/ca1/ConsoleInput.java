@@ -4,10 +4,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+// Reads lines from the keyboard and turns bad input (wrong format, empty
+// text) into a safe value instead of letting the program crash. CA1 only
+// ever sees the safe value, never the raw text or a parsing exception.
 public class ConsoleInput {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    // Returns -1 if what was typed isn't a whole number (-1 is never a
+    // valid menu option or food type, so it always falls into a "please
+    // choose again" message).
     public int readInt() {
         String input = scanner.nextLine().trim();
         try {
